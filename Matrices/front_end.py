@@ -3,7 +3,6 @@ import matrix_sum as ms
 import matrix_product as mp
 import matrix_determinant as md
 import numpy as np
-from streamlit_pills import pills
 
 background_image = """
 <style>
@@ -111,147 +110,143 @@ if all(value.isdigit() for row in matA + matB for value in row):
     matA = [[int(value) for value in row] for row in matA]
     matB = [[int(value) for value in row] for row in matB]
 
-    if pills:
-        selected = pills("SELECT A MATRIX OPERATION:",
-                         ["Sum of Matrices", "Product of Matrices", "Determinant of a Matrix", "Inverse Matrix",
-                          "Transpose of a Matrix"], ["➕", "❌", "📈", "A⁻¹", "🧩"])
+    selected = st.selectbox("SELECT A MATRIX OPERATION:",
+                            ["Sum of Matrices", "Product of Matrices", "Determinant of a Matrix", "Inverse Matrix",
+                             "Transpose of a Matrix"])
 
-        st.write(selected)
-        if selected == 'Sum of Matrices':
-            if len(matA) != len(matB) or len(matA[0]) != len(matB[0]):
-                st.error("Matrices A and B must have the same size for the sum of matrices.")
-            else:
-                st.markdown("""
-                                <h1 style="font-size: 34px; font-family: 'Arial, sans-serif'; align: 'Center'; color: yellow">
-                                Matrix Result:
-                                </h1>
-                            """, unsafe_allow_html=True)
-                matrix_Result = ms.sum_matrices(matA, matB)
-                col6, col7, col8 = st.columns(3)
-                with col7:
-                    for row_index in range(len(matrix_Result)):
-                        columns = st.columns(len(matrix_Result[0]))
-                        for col_index, col in enumerate(columns):
-                            with col:
-                                st.text_input("", value=matrix_Result[row_index][col_index],
-                                              key=f'Rrow{row_index + 1}Rcol{col_index + 1}')
-
-        elif selected == 'Product of Matrices':
-            if len(matA[0]) != len(matB):
-                st.error("Invalid matrix size! To perform, the numbers in Column-A & Row-B must be equal.")
-            else:
-                st.markdown("""
-                                <h1 style="font-size: 34px; font-family: 'Arial, sans-serif'; align: 'Center'; color: yellow">
-                                Matrix Result:
-                                </h1>
-                            """, unsafe_allow_html=True)
-                matrix_Result = mp.product_matrices(matA, matB)
-                col6, col7, col8 = st.columns(3)
-                with col7:
-                    for row_index in range(len(matrix_Result)):
-                        columns = st.columns(len(matrix_Result[0]))
-                        for col_index, col in enumerate(columns):
-                            with col:
-                                st.text_input("", value=matrix_Result[row_index][col_index],
-                                              key=f'Rrow{row_index + 1}Rcol{col_index + 1}')
-
-        elif selected == 'Determinant of a Matrix':
-            if len(matA[0]) != len(matB):
-                st.error("Invalid size! To perform, number of rows & columns must be the same.")
-            try:
-                det_matA, det_matB = md.determinant_matrices(matA, matB)
-                col9, col10 = st.columns(2)
-                with col9:
-                    st.markdown("""
-                                <h1 style="font-size: 34px; font-family: 'Arial, sans-serif'; align: 'Center'; color: yellow">
-                                Matrix Result:
-                                </h1>
-                                """, unsafe_allow_html=True)
-                    st.write(det_matA)
-                with col10:
-                    st.markdown("""
-                                <h1 style="font-size: 34px; font-family: 'Arial, sans-serif'; align: 'Center'; color: yellow">
-                                Matrix Result:
-                                </h1>
-                                """, unsafe_allow_html=True)
-                    st.write(det_matB)
-            except np.linalg.LinAlgError as e:
-                st.error(str(e))
-
-
-        elif selected == 'Inverse Matrix':
-            try:
-                col9, col10 = st.columns(2)
-                if matA:
-                    if isinstance(matA, str):
-                        matA = [int(x) for x in matA.split(',')]
-                    matA = np.array(matA)
-                    if matA.shape[0] != matA.shape[1]:
-                        st.error("Error: Input matrix A must be square for inversion.")
-                    else:
-                        with col9:
-                            inv_matA = np.linalg.inv(matA)
-                            st.markdown("""<h1 style="font-size: 34px; font-family: 'Arial, sans-serif'; align: 'Center'; color: yellow">
-                                    Matrix Result:
-                                    </h1> """, unsafe_allow_html=True)
-                            st.write(inv_matA)
-                else:
-                    st.warning("Matrix A input is not provided. Cannot calculate its inverse.")
-
-                if matB:
-                    if isinstance(matB, str):
-                        matB = [int(x) for x in matB.split(',')]
-                    matB = np.array(matB)
-                    if matB.shape[0] != matB.shape[1]:
-                        st.error("Error: Input matrix B must be square for inversion.")
-                    else:
-                        with col10:
-                            inv_matB = np.linalg.inv(matB)
-                            st.markdown("""<h1 style="font-size: 34px; font-family: 'Arial, sans-serif'; align: 'Center'; color: yellow">
-                                    Matrix Result:
-                                   </h1> """, unsafe_allow_html=True)
-                            st.write(inv_matB)
-                else:
-                    st.warning("Matrix B input is not provided. Cannot calculate its inverse.")
-            except ValueError as e:
-                st.error("Error: Invalid input matrix. Please provide valid square matrices.")
-
-            except np.linalg.LinAlgError as e:
-
-                st.error("Error: {}.".format(e))
-
-        elif selected == 'Transpose of a Matrix':
-            w = np.array(matA).shape[0]
-            x = np.array(matA).shape[1]
-            mat_Id1 = np.zeros((x, w))
-
-            for i in range(w):
-                for j in range(x):
-                    mat_Id1[j][i] = matA[i][j]
-
-            col11, col12 = st.columns(2)
-
-            with col11:
-                st.markdown("""<h1 style="font-size: 34px; font-family: 'Arial, sans-serif'; align: 'Center'; color: yellow">
+    st.write(selected)
+    if selected == 'Sum of Matrices':
+        if len(matA) != len(matB) or len(matA[0]) != len(matB[0]):
+            st.error("Matrices A and B must have the same size for the sum of matrices.")
+        else:
+            st.markdown("""
+                            <h1 style="font-size: 34px; font-family: 'Arial, sans-serif'; align: 'Center'; color: yellow">
                             Matrix Result:
-                            </h1> """, unsafe_allow_html=True)
-                st.write(mat_Id1)
+                            </h1>
+                        """, unsafe_allow_html=True)
+            matrix_Result = ms.sum_matrices(matA, matB)
+            col6, col7, col8 = st.columns(3)
+            with col7:
+                for row_index in range(len(matrix_Result)):
+                    columns = st.columns(len(matrix_Result[0]))
+                    for col_index, col in enumerate(columns):
+                        with col:
+                            st.text_input("", value=matrix_Result[row_index][col_index],
+                                          key=f'Rrow{row_index + 1}Rcol{col_index + 1}')
 
-            if matB:  # Check if matrix B exists
-                y = np.array(matB).shape[0]
-                z = np.array(matB).shape[1]
-                mat_Id2 = np.zeros((z, y))
+    elif selected == 'Product of Matrices':
+        if len(matA[0]) != len(matB):
+            st.error("Invalid matrix size! To perform, the numbers in Column-A & Row-B must be equal.")
+        else:
+            st.markdown("""
+                            <h1 style="font-size: 34px; font-family: 'Arial, sans-serif'; align: 'Center'; color: yellow">
+                            Matrix Result:
+                            </h1>
+                        """, unsafe_allow_html=True)
+            matrix_Result = mp.product_matrices(matA, matB)
+            col6, col7, col8 = st.columns(3)
+            with col7:
+                for row_index in range(len(matrix_Result)):
+                    columns = st.columns(len(matrix_Result[0]))
+                    for col_index, col in enumerate(columns):
+                        with col:
+                            st.text_input("", value=matrix_Result[row_index][col_index],
+                                          key=f'Rrow{row_index + 1}Rcol{col_index + 1}')
 
-                for i in range(y):
-                    for j in range(z):
-                        mat_Id2[j][i] = matB[i][j]
+    elif selected == 'Determinant of a Matrix':
+        if len(matA[0]) != len(matB):
+            st.error("Invalid size! To perform, number of rows & columns must be the same.")
+        try:
+            det_matA, det_matB = md.determinant_matrices(matA, matB)
+            col9, col10 = st.columns(2)
+            with col9:
+                st.markdown("""
+                            <h1 style="font-size: 34px; font-family: 'Arial, sans-serif'; align: 'Center'; color: yellow">
+                            Matrix Result:
+                            </h1>
+                            """, unsafe_allow_html=True)
+                st.write(det_matA)
+            with col10:
+                st.markdown("""
+                            <h1 style="font-size: 34px; font-family: 'Arial, sans-serif'; align: 'Center'; color: yellow">
+                            Matrix Result:
+                            </h1>
+                            """, unsafe_allow_html=True)
+                st.write(det_matB)
+        except np.linalg.LinAlgError as e:
+            st.error(str(e))
 
-                with col12:
-                    st.markdown("""<h1 style="font-size: 34px; font-family: 'Arial, sans-serif'; align: 'Center'; color: violet">
+    elif selected == 'Inverse Matrix':
+        try:
+            col9, col10 = st.columns(2)
+            if matA:
+                if isinstance(matA, str):
+                    matA = [int(x) for x in matA.split(',')]
+                matA = np.array(matA)
+                if matA.shape[0] != matA.shape[1]:
+                    st.error("Error: Input matrix A must be square for inversion.")
+                else:
+                    with col9:
+                        inv_matA = np.linalg.inv(matA)
+                        st.markdown("""<h1 style="font-size: 34px; font-family: 'Arial, sans-serif'; align: 'Center'; color: yellow">
+                                Matrix Result:
+                                </h1> """, unsafe_allow_html=True)
+                        st.write(inv_matA)
+            else:
+                st.warning("Matrix A input is not provided. Cannot calculate its inverse.")
+
+            if matB:
+                if isinstance(matB, str):
+                    matB = [int(x) for x in matB.split(',')]
+                matB = np.array(matB)
+                if matB.shape[0] != matB.shape[1]:
+                    st.error("Error: Input matrix B must be square for inversion.")
+                else:
+                    with col10:
+                        inv_matB = np.linalg.inv(matB)
+                        st.markdown("""<h1 style="font-size: 34px; font-family: 'Arial, sans-serif'; align: 'Center'; color: yellow">
                                 Matrix Result:
                                </h1> """, unsafe_allow_html=True)
-                    st.write(mat_Id2)
+                        st.write(inv_matB)
+            else:
+                st.warning("Matrix B input is not provided. Cannot calculate its inverse.")
+        except ValueError as e:
+            st.error("Error: Invalid input matrix. Please provide valid square matrices.")
 
+        except np.linalg.LinAlgError as e:
+            st.error("Error: {}.".format(e))
+
+    elif selected == 'Transpose of a Matrix':
+        w = np.array(matA).shape[0]
+        x = np.array(matA).shape[1]
+        mat_Id1 = np.zeros((x, w))
+
+        for i in range(w):
+            for j in range(x):
+                mat_Id1[j][i] = matA[i][j]
+
+        col11, col12 = st.columns(2)
+
+        with col11:
+            st.markdown("""<h1 style="font-size: 34px; font-family: 'Arial, sans-serif'; align: 'Center'; color: yellow">
+                        Matrix Result:
+                        </h1> """, unsafe_allow_html=True)
+            st.write(mat_Id1)
+
+        if matB:  # Check if matrix B exists
+            y = np.array(matB).shape[0]
+            z = np.array(matB).shape[1]
+            mat_Id2 = np.zeros((z, y))
+
+            for i in range(y):
+                for j in range(z):
+                    mat_Id2[j][i] = matB[i][j]
+
+            with col12:
+                st.markdown("""<h1 style="font-size: 34px; font-family: 'Arial, sans-serif'; align: 'Center'; color: violet">
+                            Matrix Result:
+                           </h1> """, unsafe_allow_html=True)
+                st.write(mat_Id2)
 
 else:
     st.error("Please enter valid integer values for matrix elements.")
