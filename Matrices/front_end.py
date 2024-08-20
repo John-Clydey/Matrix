@@ -110,7 +110,10 @@ if all(value.isdigit() for row in matA + matB for value in row):
     matA = [[int(value) for value in row] for row in matA]
     matB = [[int(value) for value in row] for row in matB]
 
-    selected = st.selectbox("SELECT A MATRIX OPERATION:",
+    selected = st.selectbox(    st.markdown("""
+                                    <h1 style="font-size: 24px; font-family: 'Arial, sans-serif'; color: yellow">
+                                        Select a Matrix Operation
+                                    </h1>,
                             ["Sum of Matrices", "Product of Matrices", "Determinant of a Matrix", "Inverse Matrix",
                              "Transpose of a Matrix"])
 
